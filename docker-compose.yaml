@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: ./docker/workspace/Dockerfile
+    container_name: go-g-calendar-sample-workspace
+    tty: true
+    volumes:
+      - .:/go/src/github.com/mkaiho/go-g-calendar-sample
+    working_dir: /go/src/github.com/mkaiho/go-g-calendar-sample
+    ports:
+      - 3000:3000
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    ports:
+      - "127.0.0.1:53:53"
+      - "127.0.0.1:53:53/udp"
+      - "127.0.0.1:443:443"
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4571:4571"
+    environment:
+      - SERVICES=${SERVICES- }
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - HOST_TMP_FOLDER=${TMPDIR}
+    volumes:
+      - "./docker/localstack:/tmp/localstack"
